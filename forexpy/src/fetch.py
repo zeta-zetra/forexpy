@@ -14,7 +14,7 @@ import sys
 
 # Own modules
 from sources.metatrader_5 import fetch_from_metatrader
-
+from sources.dukascopy import fetch_from_dukascopy
 
 
 @click.command()
@@ -34,45 +34,48 @@ def main(source, symbol, start, end, tf, n, output, path):
     tf        = tf.lower()
 
     if source == "dukas":
-        pass 
+        results = fetch_from_dukascopy(symbol, start, end, tf=tf)
     elif source == "metatrader":
 
         # Get the data from MetaTradeer5
         results = fetch_from_metatrader(symbol, start, tf, n, end)
         
-        if len(results) == 0:
-            click.echo(click.style("> No results found.", fg="red"))
-            sys.exit(1)
-
-        # Set the directory to save the data
-        dir_     = Path(os.path.abspath("")).parents[0]
-        dir_data = os.path.join(dir_, "data")
-
-        # Set the filename
-        filename = f"{symbol}-{source}-{tf}-{start}.csv"
-        
-        # Create a data folder if possible to save the file
-        # If not possible, save the file in the current folder
-        if os.path.exists(dir_data):
-            results.to_csv(os.path.join(dir_data,filename))
-            click.echo(click.style("File saved in the data directory", fg="green"))
-        else:
-            try:
-                os.makedirs(dir_data)
-            except Exception as e:
-                
-                click.echo(click.style("> Failed to create the data directory.", fg="red"))
-                click.echo(click.style("> File will be saved in the current folder", fg="blue"))
-                dir_data = os.path.abspath("")
-
-            results.to_csv(os.path.join(dir_data,filename))
-
     elif source == "alpha":
         pass
     elif source == "hist":
         pass 
     else:
         click.echo(click.style(f"> The data source `{source}` does not exist. Sources: [dukas, metatrader]", fg="red"))
+        sys.exit(1)
+
+    # Save the results if available
+    if len(results) == 0:
+        click.echo(click.style("> No results found.", fg="red"))
+        sys.exit(1)
+
+    # Set the directory to save the data
+    dir_     = Path(os.path.abspath("")).parents[0]
+    dir_data = os.path.join(dir_, "data")
+
+    # Set the filename
+    filename = f"{symbol}-{source}-{tf}-{start}.csv"
+    
+    # Create a data folder if possible to save the file
+    # If not possible, save the file in the current folder
+    if os.path.exists(dir_data):
+        results.to_csv(os.path.join(dir_data,filename))
+        click.echo(click.style("File saved in the data directory", fg="green"))
+    else:
+        try:
+            os.makedirs(dir_data)
+        except Exception as e:
+            
+            click.echo(click.style("> Failed to create the data directory.", fg="red"))
+            click.echo(click.style("> File will be saved in the current folder", fg="blue"))
+            dir_data = os.path.abspath("")
+
+        results.to_csv(os.path.join(dir_data,filename))
+
 
 if __name__ == "__main__":
     main()
