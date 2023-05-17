@@ -7,6 +7,8 @@ License : MIT
 """
 import click 
 
+from utils import OUTPUT, SOURCES, SYMBOLS ,TIMEFRAMES
+
 @click.command()
 def info():
     """
@@ -14,24 +16,28 @@ def info():
     """
 
     # List the data sources
-    sources = ["Dukascopy", "MetaTrader5", "Alpha Advantage", "HistData"]
+    sources = SOURCES   
     click.echo(click.style("\n> Here are the available sources: ", fg="blue"))
     for i, source in enumerate(sources):
         click.echo(click.style(f"{i+1}. {source}", fg="blue"))     
 
     # List the available currency pairs 
-    pairs = ["AUDUSD","EURUSD", "GBPUSD", "NZDUSD", "USDCAD", "USDCHF", "USDJPY"]
+    pairs = SYMBOLS 
     click.echo(click.style("\n> Here are the available pairs: ", fg="blue"))
     for i, pair in enumerate(pairs):
         click.echo(click.style(f"{i+1}. {pair}", fg="blue"))
 
     # List the timeframes
-    timeframes = ["tick","1m","5m", "15m", "30m", "1h", "4h", "1d"]
+    timeframes = TIMEFRAMES 
     click.echo(click.style("\n> Here are the available timeframes: ", fg="blue"))
     for i, tf in enumerate(timeframes):
         click.echo(click.style(f"{i+1}. {tf}", fg="blue"))
 
-
+    # List available output
+    output = OUTPUT 
+    click.echo(click.style("\n> Here are the available output types: ", fg="blue"))
+    for i, out in enumerate(output):
+        click.echo(click.style(f"{i+1}. {out}", fg="blue"))    
 
 if __name__ == "__main__":
     info()

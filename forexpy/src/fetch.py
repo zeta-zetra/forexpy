@@ -15,7 +15,7 @@ import sys
 # Own modules
 from sources.metatrader_5 import fetch_from_metatrader
 from sources.dukascopy import fetch_from_dukascopy
-
+from utils import sanitize_inputs
 
 @click.command()
 @click.option("--source", default="dukas", help="Source for the forex data")
@@ -29,10 +29,18 @@ from sources.dukascopy import fetch_from_dukascopy
 def main(source, symbol, start, end, tf, n, output, path):
 
     # `Clean` the input 
-    symbol    = symbol.upper()
-    n_candles = int(n)
-    tf        = tf.lower()
+    sanitize_results = sanitize_inputs(source, symbol, start, end, tf, output)
 
+    if sanitize_results["error"] == 1:
+        msg   = sanitize_results["body"]
+        click.echo(click.style(f"{msg}", fg="red"))
+        sys.exit(1)
+    else:
+        source, symbol, start, end, tf, output = sanitize_results["body"]
+
+
+    n_candles = int(n)
+    
     if source == "dukas":
         results = fetch_from_dukascopy(symbol, start, end, tf=tf)
     elif source == "metatrader":
