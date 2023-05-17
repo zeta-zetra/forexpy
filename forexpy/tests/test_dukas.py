@@ -2,7 +2,7 @@
 
 
 # Own modules
-from ..src.sources.dukascopy import (get_urls)
+from ..src.sources.dukascopy import (get_urls, download_file)
 
 def test_get_urls_start_only():
     """
@@ -31,7 +31,7 @@ def test_get_urls_start_only_by_tf():
 
     result = get_urls("EURUSD", "20230416", tf="1m")
 
-    assert len(result) == 24
+    assert len(result) == 1
 
 def test_get_urls_start_end_by_tf():
     """
@@ -40,4 +40,14 @@ def test_get_urls_start_end_by_tf():
 
     result = get_urls("EURUSD", "20230414","20230416", tf="1m")
 
-    assert len(result) == 72
+    assert len(result) == 3
+
+
+def test_download_file():
+    """
+    Test if a file can be downloaded
+    """
+
+    result = download_file("")
+
+    assert result["error"] == 0

@@ -68,7 +68,7 @@ def sanitize_inputs(source: str, symbol: str, start: str, end: str, tf: str="tic
         # Check if start date is less than end date 
         start_dt    = datetime.datetime.strptime(start,"%Y%m%d")
         end_dt      = datetime.datetime.strptime(end,"%Y%m%d")
-        print(start_dt <= end_dt)
+        
         if start_dt > end_dt:
                  msg = "> Start date must be LESS than End date."
                  return {"error": 1, "body": msg}  

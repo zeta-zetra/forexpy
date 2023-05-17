@@ -26,7 +26,8 @@ from utils import sanitize_inputs
 @click.option("--n", default=10, help="Number of candles to download")
 @click.option("--output", default="csv", help="Type of output for the data")
 @click.option("--path", default="", help="Full Path to save the data")
-def main(source, symbol, start, end, tf, n, output, path):
+@click.option("--keep", default="False", help="Keep the .bi5 from Dukascopy")
+def main(source, symbol, start, end, tf, n, output, path, keep):
 
     # `Clean` the input 
     sanitize_results = sanitize_inputs(source, symbol, start, end, tf, output)
@@ -83,7 +84,7 @@ def main(source, symbol, start, end, tf, n, output, path):
             dir_data = os.path.abspath("")
 
         results.to_csv(os.path.join(dir_data,filename))
-
+        click.echo(click.style("File saved successfully", fg="green"))
 
 if __name__ == "__main__":
     main()

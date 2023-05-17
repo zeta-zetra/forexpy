@@ -1,22 +1,108 @@
 
 import datetime
+import glob
 import logging
 import lzma 
+import os 
+import random
 import requests
 import struct 
 import sys 
+import time
 
 import pandas as pd 
 
-from typing import List
-
-import os 
+from typing import Dict, List, Union
 
 
+
+# Set logging config
 logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(message)s')
 
-
+# CONSTANTS
 BASE_URL = "https://datafeed.dukascopy.com/datafeed"
+
+
+def format_dates(df: pd.DataFrame, symbol: str, tf: str, date: str) -> pd.DataFrame:
+    """
+    
+    """
+
+def format_prices():
+    """
+    
+    """
+
+def format_volume():
+    """
+    
+    """
+
+def decompress(files: List[str]) -> pd.DataFrame:
+    """
+    Decompress the .bi5 files, if any, and construct a dataframe
+   
+   
+    :params files  
+    :type :List[str] 
+
+    :return: (pd.DataFrame)
+    """
+
+    prices_df = pd.DataFrame()
+
+    fmt = '>3i2f'
+    chunk_size = struct.calcsize(fmt)
+
+    for filename in files:
+        data = []
+        try:
+            with lzma.open(filename) as f:
+                while True:
+                    chunk = f.read(chunk_size)
+                    if chunk:
+                        data.append(struct.unpack(fmt, chunk))
+                    else:
+                        break
+
+            df = pd.DataFrame(data)
+
+            prices_df = pd.concat([prices_df, df])
+        except Exception as e:
+            logging.error(e)
+
+
+    return prices_df
+
+def download_file(url: str) -> Dict[str, Union[str, int]]:
+    """
+    Download the .bi5 file and save in a temp file
+
+    :params url to download from 
+    :type :str 
+
+    :return: Dict[str, Union[str, int]]
+    """
+
+    filename = "".join(url.split("/")[-4:])
+
+    if not os.path.isdir(os.path.join(os.path.abspath(''), "datatemp")):
+        os.mkdir(os.path.join(os.path.abspath(''), "datatemp"))
+
+    local_filename = os.path.join(os.path.abspath(''), "datatemp", filename)
+    with requests.get(url, stream=True) as r:
+        r.raise_for_status()
+        with open(local_filename, 'wb') as f:
+            for chunk in r.iter_content(chunk_size=8192): 
+                f.write(chunk)    
+
+    # Check if file exists
+    if os.path.isfile(local_filename):
+         return {"error":0}
+    else:
+        return {"error":1}
+        
+
 
 def get_urls(symbol: str, start: str, end: str ="", tf: str = "") -> List[str]:
     """
@@ -66,15 +152,18 @@ def get_urls(symbol: str, start: str, end: str ="", tf: str = "") -> List[str]:
 
     if end_dt == "":
    
-        for h in range(0,24):
+        
             if tf == "" or tf == "tick":
+
                     filename = f"h_ticks.bi5"
-                    url = f"{BASE_URL}/{symbol}/{start_year}/{start_month}/{start_day}/{h:02d}{filename}"
+                    for h in range(0,24):
+                        url = f"{BASE_URL}/{symbol}/{start_year}/{start_month}/{start_day}/{h:02d}{filename}"
+                        all_urls.append(url)
             else:
                     filename = "BID_candles_min_1.bi5"
                     url = f"{BASE_URL}/{symbol}/{start_year}/{start_month}/{start_day}/{filename}"
-        
-            all_urls.append(url)
+                    all_urls.append(url)
+                    
     else:
 
         date_range = list(pd.date_range(start_dt, end_dt, freq="1d"))
@@ -86,13 +175,15 @@ def get_urls(symbol: str, start: str, end: str ="", tf: str = "") -> List[str]:
                 
                 if tf == "" or tf == "tick":
                         filename = f"h_ticks.bi5"
-                        url = f"{BASE_URL}/{symbol}/{start_year}/{start_month}/{start_day}/{h:02d}{filename}"
+                        for h in range(0,24):
+                            url = f"{BASE_URL}/{symbol}/{start_year}/{start_month}/{start_day}/{h:02d}{filename}"
+                            all_urls.append(url)
                 else:
                         filename = "BID_candles_min_1.bi5"
                         url = f"{BASE_URL}/{symbol}/{start_year}/{start_month}/{start_day}/{filename}"
+                        all_urls.append(url)
 
-
-                all_urls.append(url)
+                
     
     return all_urls
 
@@ -105,51 +196,46 @@ def fetch_from_dukascopy(symbol: str, start: str, end: str, tf: str="") -> pd.Da
     urls = get_urls(symbol, start, end, tf=tf)
 
     # Download the files 
+    list_not_found  = []
+
+    for url in urls:
+        download_result = download_file(url)
+        
+        if download_result["error"] == 1:
+            list_not_found.append(url)
+
+        sleep_time = random.randint(6, 10)
+        logging.info(f"Waiting {sleep_time} seconds before continuing...")
+        time.sleep(sleep_time)
+
+    if len(list_not_found) > 0:
+        logging.info("Links to download manually: ")
+        for n in list_not_found:
+            print(n)
+
+
+    # Check if any files were downloaded from Dukascopy
+    files = glob.glob(os.path.join(os.path.abspath(''), "datatemp","*.bi5"))
+    
+    if len(files) == 0:
+        return []
+    
+    # Decompress and create dataframe
+    result_df = decompress(files)
 
     # Format the data 
 
     # Output the data
 
-    return []
+    # Delete the `datatemp` folder
+
+    return result_df
 
 
 def main():
-    # start_dt    = datetime.datetime.strptime("20230505","%Y%m%d")
-    # cutoff_dt   = datetime.datetime.now() - datetime.timedelta(days=31) 
-    # print(f"{start_dt} {cutoff_dt} {start_dt > cutoff_dt}")
 
     print(get_urls("EURUSD","20230416"))
-    # local_filename = os.path.join(os.path.abspath(''),'save.bi5')
-    # url = "https://datafeed.dukascopy.com/datafeed/EURUSD/2023/04/18/00h_ticks.bi5"
-    # # url = "https://datafeed.dukascopy.com/datafeed/EURUSD/2023/04/01/BID_candles_min_1.bi5"
-    # # url = "https://datafeed.dukascopy.com/datafeed/eurusd/2021/05/11/23h_ticks.bi5"
-    # # url   = "https://datafeed.dukascopy.com/datafeed/EURUSD/2023/04/08/00h_ticks.bi5"
-    # res = requests.get(url)
-    # res_body = res.content
 
-    # with requests.get(url, stream=True) as r:
-    #     r.raise_for_status()
-    #     with open(local_filename, 'wb') as f:
-    #         for chunk in r.iter_content(chunk_size=8192): 
-    #             # If you have chunk encoded response uncomment if
-    #             # and set chunk_size parameter to None.
-    #             #if chunk: 
-    #             f.write(chunk)
-
-
-    # fmt = '>3i2f'
-    # chunk_size = struct.calcsize(fmt)
-    # data = []
-    # with lzma.open(local_filename) as f:
-    #     while True:
-    #         chunk = f.read(chunk_size)
-    #         if chunk:
-    #             data.append(struct.unpack(fmt, chunk))
-    #         else:
-    #             break
-    # df = pd.DataFrame(data)
-
-    # print(df)
 
 if __name__ == "__main__":
     main()
