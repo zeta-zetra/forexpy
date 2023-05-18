@@ -26,7 +26,7 @@ from utils import sanitize_inputs
 @click.option("--n", default=10, help="Number of candles to download")
 @click.option("--output", default="csv", help="Type of output for the data")
 @click.option("--path", default="", help="Full Path to save the data")
-@click.option("--keep", default="False", help="Keep the .bi5 from Dukascopy")
+@click.option("--keep", default="F", help="Keep the .bi5 from Dukascopy. To keep the files set: --keep T ")
 def main(source, symbol, start, end, tf, n, output, path, keep):
 
     # `Clean` the input 
@@ -43,7 +43,7 @@ def main(source, symbol, start, end, tf, n, output, path, keep):
     n_candles = int(n)
     
     if source == "dukas":
-        results = fetch_from_dukascopy(symbol, start, end, tf=tf)
+        results = fetch_from_dukascopy(symbol, start, end, tf=tf, keep=keep)
     elif source == "metatrader":
 
         # Get the data from MetaTradeer5

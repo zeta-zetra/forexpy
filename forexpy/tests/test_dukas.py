@@ -1,5 +1,5 @@
 
-
+import pytest 
 
 # Own modules
 from ..src.sources.dukascopy import (get_urls, download_file)
@@ -43,11 +43,43 @@ def test_get_urls_start_end_by_tf():
     assert len(result) == 3
 
 
+def test_download_file_fail():
+    """
+    Test if a file is not downloaded
+    """
+    
+    result = download_file("https://datafeed.dukascopy.com/datafeed")
+
+    assert result["error"] == 1
+
+
 def test_download_file():
     """
     Test if a file can be downloaded
     """
 
-    result = download_file("")
+    result = download_file("https://datafeed.dukascopy.com/datafeed/EURUSD/2023/03/17/00h_ticks.bi5")
 
     assert result["error"] == 0
+
+
+def test_format_volume():
+    """
+    Test formatting the volume
+    """
+
+    pass 
+
+def test_format_prices():
+    """
+    Test formatting prices 
+    """
+    pass 
+
+
+def test_format_columns():
+    """
+    Test formatting columns    
+    """
+
+    pass 
