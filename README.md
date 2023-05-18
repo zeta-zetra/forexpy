@@ -18,7 +18,7 @@ Here is a list of data sources:
 
  - [x] MetaTrader5
 
- - Dukascopy
+ - [x] Dukascopy
 
  - Alpha Advantage
 
