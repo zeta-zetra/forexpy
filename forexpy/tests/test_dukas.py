@@ -1,8 +1,26 @@
-
+import os 
 import pytest 
 
 # Own modules
-from ..src.sources.dukascopy import (get_urls, download_file)
+from ..src.sources.dukascopy import (get_urls, download_file, decompress)
+
+def test_decompress_fail():
+    """
+    Test decompressing a non-existent .bi5 file 
+    """
+    
+    result = decompress("")
+
+    assert len(result) == 0
+
+def test_decompress():
+    """
+    Test decompressing a .bi5 file
+    """
+    data_dir = os.path.join(os.path.abspath(""), "forexpy", "tests", "data")
+    result = decompress(os.path.join(data_dir, "2023031702h_ticks.bi5"))
+
+    assert len(result) == 3096
 
 def test_get_urls_start_only():
     """

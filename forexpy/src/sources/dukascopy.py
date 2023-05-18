@@ -14,7 +14,7 @@ import pandas as pd
 
 from typing import Dict, List, Union
 
-from ..utils import RESAMPLE_DICT
+from utils import RESAMPLE_DICT
 
 # Set logging config
 logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(message)s')

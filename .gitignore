@@ -1,6 +1,7 @@
 forexpy/data
 datatemp
 *.bi5
+temp
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
