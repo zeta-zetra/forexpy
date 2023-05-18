@@ -34,7 +34,8 @@ def format_dates(df: pd.DataFrame, symbol: str,  filename: str) -> pd.DataFrame:
         dt   = datetime.datetime.strptime(date, "%Y%m%d")
         updated_dt = dt + datetime.timedelta(hours=hour)
 
-    dates = [ updated_dt+t  for t in pd.TimedeltaIndex(df.iloc[:,0])  ]
+    dates = [ updated_dt+t  for t in pd.TimedeltaIndex(df.iloc[:,0], unit='ms')  ]
+
 
     df["date"] = dates
     
@@ -63,25 +64,25 @@ def format_volume(df: pd.DataFrame) -> pd.DataFrame:
 
     df.iloc[:,3] = df.iloc[:,3]*1000000
     df.iloc[:,4] = df.iloc[:,4]*1000000
-
+    
     return df 
 
 def format_columns(df: pd.DataFrame) -> pd.DataFrame:
     """
     Format columns
     """
-
+ 
     df.rename(columns={0: "secs", 1: "ask", 2:"bid", 3:"ask_vol", 4: "bid_vol"}, inplace=True)
-
+   
     df = df[["ask", "bid", "ask_vol", "bid_vol", "date"]]
 
-    df.set_index("date", inplace=True)
+    # df.set_index("date", inplace=True)
 
     return df
 
 
 
-def decompress(filename: str) -> pd.DataFrame:
+def decompress(filename: str, tf:str = "tick") -> pd.DataFrame:
     """
     Decompress the .bi5 files, if any, and construct a dataframe
    
@@ -92,7 +93,10 @@ def decompress(filename: str) -> pd.DataFrame:
     :return: (pd.DataFrame)
     """
 
-    fmt = '>3i2f'
+    if tf == "tick":
+        fmt = '>3I2f'
+
+
     chunk_size = struct.calcsize(fmt)
 
    
@@ -199,16 +203,11 @@ def get_urls(symbol: str, start: str, end: str ="", tf: str = "") -> List[str]:
     if end_dt == "":
    
         
-            if tf == "" or tf == "tick":
-
-                    filename = f"h_ticks.bi5"
-                    for h in range(0,24):
-                        url = f"{BASE_URL}/{symbol}/{start_year}/{start_month}/{start_day}/{h:02d}{filename}"
-                        all_urls.append(url)
-            else:
-                    filename = "BID_candles_min_1.bi5"
-                    url = f"{BASE_URL}/{symbol}/{start_year}/{start_month}/{start_day}/{filename}"
-                    all_urls.append(url)
+            filename = f"h_ticks.bi5"
+            for h in range(0,24):
+                url = f"{BASE_URL}/{symbol}/{start_year}/{start_month}/{start_day}/{h:02d}{filename}"
+                all_urls.append(url)
+ 
                     
     else:
 
@@ -219,18 +218,13 @@ def get_urls(symbol: str, start: str, end: str ="", tf: str = "") -> List[str]:
                 start_month = dt.month if dt.month >= 10 else f"0{dt.month}"
                 start_day   = dt.day if dt.day >= 10 else f"0{dt.day}"            
                 
-                if tf == "" or tf == "tick":
-                        filename = f"h_ticks.bi5"
-                        for h in range(0,24):
-                            url = f"{BASE_URL}/{symbol}/{start_year}/{start_month}/{start_day}/{h:02d}{filename}"
-                            all_urls.append(url)
-                else:
-                        filename = "BID_candles_min_1.bi5"
-                        url = f"{BASE_URL}/{symbol}/{start_year}/{start_month}/{start_day}/{filename}"
-                        all_urls.append(url)
-
                 
-    
+                filename = f"h_ticks.bi5"
+                for h in range(0,24):
+                    url = f"{BASE_URL}/{symbol}/{start_year}/{start_month}/{start_day}/{h:02d}{filename}"
+                    all_urls.append(url)
+   
+
     return all_urls
 
 def resample_ohlc(df: pd.DataFrame, tf: str) -> pd.DataFrame:
@@ -248,17 +242,16 @@ def resample_ohlc(df: pd.DataFrame, tf: str) -> pd.DataFrame:
     rule = RESAMPLE_DICT[tf]
 
     # set the index 
-    df["Local time"] = pd.to_datetime(df["Local time"])
-    df.set_index("Local time", inplace=True)
+    
+    # df["Local time"] = pd.to_datetime(df["Local time"])
+    df.set_index("date", inplace=True)
 
     # Resample 
-    ohlcv = df[["Open","High","Low","Close"]]
-    ohlcv = ohlcv.resample(rule, closed = 'right',label = 'right').agg({'Open': 'first', 
-                                 'High': 'max', 
-                                 'Low': 'min', 
-                                 'Close': 'last',
-                                 'Volume':'sum'})
+    ohlcv = df.drop(["ask","ask_vol","bid_vol"], axis=1)
+    ohlcv = ohlcv.resample(rule).ohlc()
 
+    ohlcv.reset_index(inplace=True)
+    
     return ohlcv
 
 def fetch_from_dukascopy(symbol: str, start: str, end: str, tf: str="", keep="F") -> pd.DataFrame:
@@ -289,7 +282,9 @@ def fetch_from_dukascopy(symbol: str, start: str, end: str, tf: str="", keep="F"
 
 
     # Check if any files were downloaded from Dukascopy
-    files = glob.glob(os.path.join(os.path.abspath(''), "datatemp","*.bi5"))
+   
+    files = glob.glob(os.path.join(os.path.abspath(''), "datatemp","*ticks.bi5"))
+  
     
     if len(files) == 0:
         return []
@@ -299,9 +294,9 @@ def fetch_from_dukascopy(symbol: str, start: str, end: str, tf: str="", keep="F"
     for file in files:
          result_df = decompress(file)
          if len(result_df) > 0:
-             if tf == "tick":
+            
                 filename  = os.path.basename(file)
-                
+             
                 # Format the dates 
                 result_df = format_dates(result_df, symbol, filename)
 
@@ -312,25 +307,17 @@ def fetch_from_dukascopy(symbol: str, start: str, end: str, tf: str="", keep="F"
                 result_df  = format_volume(result_df)
 
                 # Format the columns  
-                final_df = format_columns(final_df)
+                result_df = format_columns(result_df)
 
                 # Save latest result
                 final_df = pd.concat([final_df, result_df])
-
-             else:
-
-                result_df = pd.read_csv(filename)
-
-                # Save latest result
-                final_df = pd.concat([final_df, result_df])
-
-
+    
     # Check if resample is needed and index the date
-    if tf != "tick" and tf != "1m":
+    if tf != "tick":
             # Resample the data 
             final_df = resample_ohlc(final_df, tf)
-    
-
+            final_df.columns = final_df.columns.droplevel(0)
+            final_df.rename(columns={'':"date"}, inplace=True)
 
     # Delete the `datatemp` folder
     if keep in ['F', 'f']:
@@ -343,24 +330,7 @@ def fetch_from_dukascopy(symbol: str, start: str, end: str, tf: str="", keep="F"
     return final_df
 
 
-def main():
 
-    # Read data 
-    
-    dir_ = os.path.abspath('').split('app')[0]
-    print(os.path.join(dir_, "data"))
-    filename = os.path.join(dir_, "data", "EURUSD-dukas-tick-20230315.csv")
-
-    df  = pd.read_csv(filename)    
-    now = datetime.datetime.now()
-    print()
-    print(now + pd.TimedeltaIndex(df.iloc[:,1]))
-
-    # s = [ now+t  for t in pd.TimedeltaIndex(df.iloc[:,1])  ]
-    # df["date"] = s 
-    filename = ["2023031500h_ticks.bi5", "2023031501h_ticks.bi5"]
-    print(int(filename.split('h')[0][-2:]))
-    
 if __name__ == "__main__":
-    # main()
+    
     fetch_from_dukascopy("EURUSD", "", "")
