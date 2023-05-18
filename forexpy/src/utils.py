@@ -10,6 +10,7 @@ from typing import Dict, Tuple, Union
 SOURCES    = ["dukas", "metatrader", "alpha", "hist"]
 SYMBOLS    = ["AUDUSD","EURUSD", "GBPUSD", "NZDUSD", "USDCAD", "USDCHF", "USDJPY"]
 TIMEFRAMES = ["tick","1m","5m", "15m", "30m", "1h", "4h", "1d"]
+RESAMPLE_DICT = {"5m":"5min", "15m":"15min", "30m":"30min", "1h":"1H", "4h":"4H", "1d":"1D"}
 OUTPUT     = ["csv"]
 
 def sanitize_inputs(source: str, symbol: str, start: str, end: str, tf: str="tick", output: str ="csv") -> Union[Dict[str, Union[int, str]] ,Dict[str, Union[int, Tuple[str, str, str, str, str, str] ]]]:

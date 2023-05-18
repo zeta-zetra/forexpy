@@ -14,7 +14,7 @@ import pandas as pd
 
 from typing import Dict, List, Union
 
-
+from ..utils import RESAMPLE_DICT
 
 # Set logging config
 logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(message)s')
@@ -233,6 +233,34 @@ def get_urls(symbol: str, start: str, end: str ="", tf: str = "") -> List[str]:
     
     return all_urls
 
+def resample_ohlc(df: pd.DataFrame, tf: str) -> pd.DataFrame:
+    """
+    Resample the ohlc data 
+
+    :params df dataframe with ohlcv data 
+    :type :pd.DataFrame 
+
+    :params tf timeframe 
+    :type :str 
+
+    :return: (pd.DataFrame) 
+    """
+    rule = RESAMPLE_DICT[tf]
+
+    # set the index 
+    df["Local time"] = pd.to_datetime(df["Local time"])
+    df.set_index("Local time", inplace=True)
+
+    # Resample 
+    ohlcv = df[["Open","High","Low","Close"]]
+    ohlcv = ohlcv.resample(rule, closed = 'right',label = 'right').agg({'Open': 'first', 
+                                 'High': 'max', 
+                                 'Low': 'min', 
+                                 'Close': 'last',
+                                 'Volume':'sum'})
+
+    return ohlcv
+
 def fetch_from_dukascopy(symbol: str, start: str, end: str, tf: str="", keep="F") -> pd.DataFrame:
     """
     Downloading Dukascopy data
@@ -288,6 +316,7 @@ def fetch_from_dukascopy(symbol: str, start: str, end: str, tf: str="", keep="F"
 
                 # Save latest result
                 final_df = pd.concat([final_df, result_df])
+
              else:
 
                 result_df = pd.read_csv(filename)
@@ -297,12 +326,9 @@ def fetch_from_dukascopy(symbol: str, start: str, end: str, tf: str="", keep="F"
 
 
     # Check if resample is needed and index the date
-    if tf != "tick":
-        if tf == "1m":
-            pass 
-        else:
-            # Resample 
-            pass 
+    if tf != "tick" and tf != "1m":
+            # Resample the data 
+            final_df = resample_ohlc(final_df, tf)
     
 
 
