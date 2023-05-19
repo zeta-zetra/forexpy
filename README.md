@@ -1,4 +1,4 @@
-![image](https://img.shields.io/pypi/pyversions/tqdm.svg?logo=python&logoColor=white) ![image](https://img.shields.io/pypi/l/tqdm.svg)
+![image](https://img.shields.io/pypi/pyversions/django) ![image](https://img.shields.io/pypi/l/tqdm.svg)
 
 # forexpy - Collect forex data with Python
 
