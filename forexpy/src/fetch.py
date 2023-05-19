@@ -44,15 +44,15 @@ def main(source, symbol, start, end, tf, n, output, path, keep):
     n_candles = int(n)
     
     if source == "dukas":
+        # Get the data from Dukascopy 
         results = fetch_from_dukascopy(symbol, start, end, tf=tf, keep=keep)
     elif source == "metatrader":
 
-        # Get the data from MetaTradeer5
+        # Get the data from MetaTrader5
         results = fetch_from_metatrader(symbol, start, tf, n, end)
         
-    elif source == "alpha":
-        pass
     elif source == "hist":
+        # Get the data from HistData
         results = fetch_from_hist(symbol, start, end, tf, path=path, keep=keep)
     else:
         click.echo(click.style(f"> The data source `{source}` does not exist. Sources: [dukas, metatrader]", fg="red"))

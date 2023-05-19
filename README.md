@@ -20,8 +20,6 @@ Here is a list of data sources:
 
  - [x] Dukascopy
 
- - Alpha Advantage
-
  - [x] Histdata.com 
 
 
