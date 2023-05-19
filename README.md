@@ -49,7 +49,7 @@ to get the given task accomplished. The `fetch.py` has options. To get a view of
                     To keep the files set: --keep T
     --help         Show this message and exit.
 
-When you run `python info.py`, you will get information about. Here is a sample:
+When you run `python info.py`, you will get information about available source, pairs, etc. Here is a sample output:
 
     > Here are the available sources:
         1. dukas
@@ -124,27 +124,27 @@ You can download data between a range of dates. This will download EURUSD tick b
 
 You can download for different timeframes as well:
 
-1. 1 Min
+1. **1 Min**
 
         python fetch.py --start 20221002 --tf 1m 
 
-2. 5 Min 
+2. **5 Min** 
 
         python fetch.py --start 20221002 --end 20221015 --tf 5m
 
-3. 15 Min 
+3. **15 Min** 
 
         python fetch.py --start 20221102 --end 20221115 --tf 15m
 
-4. 30 Min
+4. **30 Min**
 
         python fetch.py --start 20221002 --end 20221015 --tf 30m
 
-5. 1 Hour 
+5. **1 Hour** 
 
         python fetch.py --symbol USDJPY --start 20221002 --end 20221015 --tf 1h
 
-6. 1 Day 
+6. **1 Day** 
 
         python fetch.py --symbol GBPUSD  --start 20221002 --end 20221015 --tf 1d
 
@@ -152,6 +152,15 @@ When downloading data from Dukascopy, `.bi5` are saved in a folder and then used
 tell forexpy if these files should be deleted or not. By default there are deleted. To keep them, run:
 
     python fetch.py --start 20221002 --end 20221015 --tf 1d --keep T 
+
+
+If you have a folder of `.bi5` files then you can use `decompressor.py` to decompress them. Simply run:
+
+    python decompressor.py --path XXXX 
+
+You can also state where the final output should be saved:
+
+    python decompressor.py --path XXXX --save XXXX
 
 ### Metatrader5
 
