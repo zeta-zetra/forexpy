@@ -1,3 +1,5 @@
+![image](https://img.shields.io/pypi/pyversions/tqdm.svg?logo=python&logoColor=white) ![image](https://img.shields.io/pypi/l/tqdm.svg)
+
 # forexpy - Collect forex data with Python
 
 `forexpy` is a python command-line package that can download currency exchange rates from multiple soruces. The
@@ -185,7 +187,7 @@ To get the latest 100 tick data for a symbol, you run:
 
 Change `--n` according to your needs. Be mindful that there is a limit. 
 
-Date ranges and different timeframes are supported for MetaTrader. See the [Dukascopy](#dukascopy) for examples. Just add the `--source metatrader` argument.
+Date ranges and different timeframes are supported for MetaTrader. See the [Dukascopy section](#dukascopy) for examples. Just add the `--source metatrader` argument.
 
 ### HistData 
 
@@ -195,7 +197,7 @@ You can source data from [HistData](https://www.histdata.com/), by running:
 
 The above code will fetch tick EURUSD for the current month. 
 
-Date ranges and different timeframes are supported for HistData. See the [Dukascopy](#dukascopy) for examples. Just add the `--source hist` argument.
+Date ranges and different timeframes are supported for HistData. See the [Dukascopy section](#dukascopy) for examples. Just add the `--source hist` argument.
 
 When data is downloaded from [HistData](https://www.histdata.com/), a number of zip files need to be saved. By default forexpy will delete these zip files
 after the final output. You may want to keep them. Run the following:
