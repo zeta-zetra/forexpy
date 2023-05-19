@@ -8,6 +8,11 @@ Table of Contents
 
 * [Data Sources](#data-sources) 
 * [Usage](#usage)
+   * [Available Currency pairs](#available-currency-pairs)
+   * [Available TimeFrames](available-timeFrames)
+   * [Dukascopy](#dukascopy)
+   * [Metatrader5](#metatrader5)
+   * [HistData](#histdata)
 * [Disclaimer](#disclaimer)
 * [Contact](#contact)
 
@@ -44,6 +49,23 @@ to get the given task accomplished. The `fetch.py` has options. To get a view of
                     To keep the files set: --keep T
     --help         Show this message and exit.
 
+When you run `python info.py`, you will get information about. Here is a sample:
+
+    > Here are the available sources:
+        1. dukas
+        2. metatrader
+        3. hist
+    > Here are the available pairs:
+        1. AUDUSD
+        2. EURUSD
+        3. GBPUSD
+    > Here are the available timeframes:
+        1. tick
+        2. 1m
+        3. 5m
+    > Here are the available output types:
+        1. csv
+
  ### Available Currency pairs
 
    - AUDUSD 
@@ -78,8 +100,58 @@ to get the given task accomplished. The `fetch.py` has options. To get a view of
    
    - 1 Day 
 
+   *Note*: To arrive at some timeframes, 1 minute data is downloaded and resampled to the desired timeframe. 
+
+
+
 ### Dukascopy
 
+By default if no source is provided, the data will be fetched from [Dukascopy](https://www.dukascopy.com/trading-tools/widgets/quotes/historical_data_feed). 
+
+When you run the code below:
+
+    python fetch.py 
+
+you are asking data for EURUSD tick from Dukascopy for today. **No data will be downloaded.**. Dukascopy does not provide real-time data, try [Metatrader5](#metatrader5).
+
+For Dukascopy make sure your start and/or end dates are at least a month before the current date. This will download EURUSD tick data for 2022-10-02 only. 
+
+    python fetch.py --start 20221002  
+
+You can download data between a range of dates. This will download EURUSD tick between 2022-10-02 and 2022-11-10
+
+    python fetch.py --start 20221002 --end 20221110  
+
+You can download for different timeframes as well:
+
+1. 1 Min
+
+        python fetch.py --start 20221002 --tf 1m 
+
+2. 5 Min 
+
+        python fetch.py --start 20221002 --end 20221015 --tf 5m
+
+3. 15 Min 
+
+        python fetch.py --start 20221102 --end 20221115 --tf 15m
+
+4. 30 Min
+
+        python fetch.py --start 20221002 --end 20221015 --tf 30m
+
+5. 1 Hour 
+
+        python fetch.py --symbol USDJPY --start 20221002 --end 20221015 --tf 1h
+
+6. 1 Day 
+
+        python fetch.py --symbol GBPUSD  --start 20221002 --end 20221015 --tf 1d
+
+When downloading data from Dukascopy, `.bi5` are saved in a folder and then used to create the final csv file. The `--keep` argument is used to 
+tell forexpy if these files should be deleted or not. By default there are deleted. To keep them, run:
+
+    python fetch.py --start 20221002 --end 20221015 --tf 1d --keep T 
 
 ### Metatrader5
 
