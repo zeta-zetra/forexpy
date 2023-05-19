@@ -15,6 +15,7 @@ import sys
 # Own modules
 from sources.metatrader_5 import fetch_from_metatrader
 from sources.dukascopy import fetch_from_dukascopy
+from sources.histdata import fetch_from_hist
 from utils import sanitize_inputs
 
 @click.command()
@@ -26,18 +27,18 @@ from utils import sanitize_inputs
 @click.option("--n", default=10, help="Number of candles to download")
 @click.option("--output", default="csv", help="Type of output for the data")
 @click.option("--path", default="", help="Full Path to save the data")
-@click.option("--keep", default="F", help="Keep the .bi5 from Dukascopy. To keep the files set: --keep T ")
+@click.option("--keep", default="F", help="Keep the .bi5 from Dukascopy or the zip files from HistData. To keep the files set: --keep T ")
 def main(source, symbol, start, end, tf, n, output, path, keep):
 
     # `Clean` the input 
-    sanitize_results = sanitize_inputs(source, symbol, start, end, tf, output)
+    sanitize_results = sanitize_inputs(source, symbol, start, end, tf, output, path)
 
     if sanitize_results["error"] == 1:
         msg   = sanitize_results["body"]
         click.echo(click.style(f"{msg}", fg="red"))
         sys.exit(1)
     else:
-        source, symbol, start, end, tf, output = sanitize_results["body"]
+        source, symbol, start, end, tf, output, path = sanitize_results["body"]
 
 
     n_candles = int(n)
@@ -52,7 +53,7 @@ def main(source, symbol, start, end, tf, n, output, path, keep):
     elif source == "alpha":
         pass
     elif source == "hist":
-        pass 
+        results = fetch_from_hist(symbol, start, end, tf, path=path, keep=keep)
     else:
         click.echo(click.style(f"> The data source `{source}` does not exist. Sources: [dukas, metatrader]", fg="red"))
         sys.exit(1)

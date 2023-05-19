@@ -1,5 +1,7 @@
 forexpy/data
 datatemp
+temp_hist
+*.zip
 *.bi5
 temp
 # Byte-compiled / optimized / DLL files

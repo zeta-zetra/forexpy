@@ -6,6 +6,16 @@ import pytest
 from ..src.utils import (sanitize_inputs, OUTPUT, SOURCES, SYMBOLS, TIMEFRAMES)
 
 
+def test_path_existence():
+    """
+    Test if the given path exists
+    """
+
+    results = sanitize_inputs(d,"EURUSD", "20230104", "20230105", path="datatemp")
+
+    assert results["error"] == 1
+
+
 @pytest.mark.parametrize("d", SOURCES )
 def test_sanitize_input_sources(d):
     """

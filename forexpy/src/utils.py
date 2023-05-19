@@ -6,14 +6,14 @@ import datetime
 
 from typing import Dict, Tuple, Union
 
-
-SOURCES    = ["dukas", "metatrader", "alpha", "hist"]
-SYMBOLS    = ["AUDUSD","EURUSD", "GBPUSD", "NZDUSD", "USDCAD", "USDCHF", "USDJPY"]
-TIMEFRAMES = ["tick","1m","5m", "15m", "30m", "1h", "4h", "1d"]
+ 
+SOURCES       = ["dukas", "metatrader", "alpha", "hist"]
+SYMBOLS       = ["AUDUSD","EURUSD", "GBPUSD", "NZDUSD", "USDCAD", "USDCHF", "USDJPY"]
+TIMEFRAMES    = ["tick","1m","5m", "15m", "30m", "1h", "4h", "1d"]
 RESAMPLE_DICT = {"1m":"1Min","5m":"5Min", "15m":"15Min", "30m":"30Min", "1h":"1H", "4h":"4H", "1d":"1D"}
-OUTPUT     = ["csv"]
+OUTPUT        = ["csv"]
 
-def sanitize_inputs(source: str, symbol: str, start: str, end: str, tf: str="tick", output: str ="csv") -> Union[Dict[str, Union[int, str]] ,Dict[str, Union[int, Tuple[str, str, str, str, str, str] ]]]:
+def sanitize_inputs(source: str, symbol: str, start: str, end: str, tf: str="tick", output: str ="csv", path: str = "") -> Union[Dict[str, Union[int, str]] ,Dict[str, Union[int, Tuple[str, str, str, str, str, str] ]]]:
     """
     Check if all inputs by the user are allowed.
     
@@ -36,9 +36,18 @@ def sanitize_inputs(source: str, symbol: str, start: str, end: str, tf: str="tic
     :params output is the type of file output
     :type :str 
 
+    :params path is where the downloaded files and final file will be saved 
+    :type :str
 
     :return: Union[Dict[str, Union[int, str]] ,Dict[str, Union[int, Tuple[str, str, str, str, str, str] ]]]
     """
+
+    if path != "":
+
+        if not os.path.isdir(path):
+            msg = "> Provided path does not exit. Create the folder first."
+            return {"error": 1, "body": msg}
+
 
     if source.lower() not in SOURCES:
         msg = "> Provided source does not exist. Please run the `info.py` to see sources"
@@ -74,5 +83,5 @@ def sanitize_inputs(source: str, symbol: str, start: str, end: str, tf: str="tic
                  msg = "> Start date must be LESS than End date."
                  return {"error": 1, "body": msg}  
 
-    return {"error": 0, "body": (source.lower(), symbol.upper(), start, end, tf.lower(), output.lower())}
+    return {"error": 0, "body": (source.lower(), symbol.upper(), start, end, tf.lower(), output.lower(), path)}
 
