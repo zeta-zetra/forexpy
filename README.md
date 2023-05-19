@@ -22,7 +22,7 @@ Here is a list of data sources:
 
  - Alpha Advantage
 
- - Histdata.com 
+ - [x] Histdata.com 
 
 
 
