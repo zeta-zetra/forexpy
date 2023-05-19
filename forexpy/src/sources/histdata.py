@@ -251,7 +251,7 @@ def resample_ohlc(df: pd.DataFrame, tf: str) -> pd.DataFrame:
 
 
 
-def fetch_from_hist(symbol: str, start:str, end:str, tf:str, path: str="", keep=keep) -> pd.DataFrame:
+def fetch_from_hist(symbol: str, start:str, end:str, tf:str, path: str="", keep:str ="") -> pd.DataFrame:
     """
     Fetch the data from Histdata
 
@@ -313,7 +313,7 @@ def fetch_from_hist(symbol: str, start:str, end:str, tf:str, path: str="", keep=
         return ohlc 
 
     # Clean up if necessary 
-    if keep != "F":
+    if keep != "F" or keep == "":
         pass 
 
     return price_df

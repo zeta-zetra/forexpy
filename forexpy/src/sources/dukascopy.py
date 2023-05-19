@@ -193,7 +193,7 @@ def get_urls(symbol: str, start: str, end: str ="", tf: str = "") -> List[str]:
     cutoff_dt   = datetime.datetime.now() - datetime.timedelta(days=31) 
 
     if start_dt > cutoff_dt:
-        logging.error(f"ERROR - Start and/or end date has to be less than {cutoff_dt.strftime('%Y-%m-%d')}")
+        logging.error(f"ERROR - Start and/or end date has to be less than {cutoff_dt.strftime('%Y-%m-%d')} for Dukascopy")
         sys.exit()
 
 

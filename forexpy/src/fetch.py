@@ -64,8 +64,11 @@ def main(source, symbol, start, end, tf, n, output, path, keep):
         sys.exit(1)
 
     # Set the directory to save the data
-    dir_     = Path(os.path.abspath("")).parents[0]
-    dir_data = os.path.join(dir_, "data")
+    if path == "":
+        dir_     = Path(os.path.abspath("")).parents[0]
+        dir_data = os.path.join(dir_, "data")
+    else:
+        dir_data = os.path.join(path, "data")
 
     # Set the filename
     filename = f"{symbol}-{source}-{tf}-{start}.csv"
@@ -74,13 +77,13 @@ def main(source, symbol, start, end, tf, n, output, path, keep):
     # If not possible, save the file in the current folder
     if os.path.exists(dir_data):
         results.to_csv(os.path.join(dir_data,filename))
-        click.echo(click.style("File saved in the data directory", fg="green"))
+        click.echo(click.style(f"File saved in the data folder under {path}", fg="green"))
     else:
         try:
             os.makedirs(dir_data)
         except Exception as e:
             
-            click.echo(click.style("> Failed to create the data directory.", fg="red"))
+            click.echo(click.style("> Failed to create the data folder.", fg="red"))
             click.echo(click.style("> File will be saved in the current folder", fg="blue"))
             dir_data = os.path.abspath("")
 
