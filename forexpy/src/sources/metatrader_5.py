@@ -117,7 +117,7 @@ def get_rates_range(symbol: str, timeframe:str, start: str, end: str):
         from_date  = datetime.datetime.strptime(start,"%Y%m%d")
         to_date    =  datetime.datetime.strptime(end,"%Y%m%d")
     except Exception as e:
-        print("Error with the date format. Make sure to format is YYYYMMDD")
+        logging.error("Error with the date format. Make sure to format is YYYYMMDD")
         sys.exit(1)
 
     # Get rates 

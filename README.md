@@ -55,14 +55,23 @@ When you run `python info.py`, you will get information about available source, 
         1. dukas
         2. metatrader
         3. hist
+
     > Here are the available pairs:
         1. AUDUSD
         2. EURUSD
         3. GBPUSD
+            .
+            .
+            .
+
     > Here are the available timeframes:
         1. tick
         2. 1m
         3. 5m
+           .
+           .
+           . 
+
     > Here are the available output types:
         1. csv
 
@@ -148,7 +157,7 @@ You can download for different timeframes as well:
 
         python fetch.py --symbol GBPUSD  --start 20221002 --end 20221015 --tf 1d
 
-When downloading data from Dukascopy, `.bi5` are saved in a folder and then used to create the final csv file. The `--keep` argument is used to 
+When downloading data from Dukascopy, `.bi5` files are saved in a folder and then used to create the final csv file. The `--keep` argument is used to 
 tell forexpy if these files should be deleted or not. By default there are deleted. To keep them, run:
 
     python fetch.py --start 20221002 --end 20221015 --tf 1d --keep T 
@@ -164,6 +173,19 @@ You can also state where the final output should be saved:
 
 ### Metatrader5
 
+To source data from your broker on [Metatrader5](https://www.metatrader5.com/), make sure it is installed. 
+
+    python fetch.py --source metatrader 
+
+The above code will fetch the latest 10 EURUSD tick data for today.
+
+To get the latest 100 tick data for a symbol, you run:
+
+    python fetch.py --source metatrader --symbol EURUSD --n 100
+
+Change `--n` according to your needs. Be mindful that there is a limit. 
+
+Date ranges and different timeframes are supported for MetaTrader. See the [Dukascopy](#dukascopy) for examples. Just add the `--source metatrader` argument.
 
 ### HistData 
 
