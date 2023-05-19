@@ -173,7 +173,7 @@ You can also state where the final output should be saved:
 
 ### Metatrader5
 
-To source data from your broker on [Metatrader5](https://www.metatrader5.com/), make sure it is installed. 
+To source data from your broker on [Metatrader5](https://www.metatrader5.com/), make sure [Metatrader5](https://www.metatrader5.com/) is installed. 
 
     python fetch.py --source metatrader 
 
@@ -189,7 +189,18 @@ Date ranges and different timeframes are supported for MetaTrader. See the [Duka
 
 ### HistData 
 
+You can source data from [HistData](https://www.histdata.com/), by running:
 
+    python fetch.py --source hist 
+
+The above code will fetch tick EURUSD for the current month. 
+
+Date ranges and different timeframes are supported for HistData. See the [Dukascopy](#dukascopy) for examples. Just add the `--source hist` argument.
+
+When data is downloaded from [HistData](https://www.histdata.com/), a number of zip files need to be saved. By default forexpy will delete these zip files
+after the final output. You may want to keep them. Run the following:
+
+    python fetch.py --source hist --keep T
 
 ## Disclaimer
 
