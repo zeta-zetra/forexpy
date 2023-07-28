@@ -13,7 +13,7 @@ import os
 import pandas as pd 
 import requests
 import sys 
-import zipfile38 as zipfile
+import zipfile
 
 
 from bs4 import BeautifulSoup
