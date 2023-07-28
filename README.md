@@ -7,7 +7,7 @@ package can provide forex data for storage, strategy development, etc.
 
 Table of Contents
 =================
-
+* [Installation]()
 * [Data Sources](#data-sources) 
 * [Usage](#usage)
    * [Available Currency pairs](#available-currency-pairs)
@@ -18,6 +18,18 @@ Table of Contents
 * [Disclaimer](#disclaimer)
 * [Contact](#contact)
 
+
+## Installation 
+
+The library is currently not available on PyPI. Clone the repo by downloading it as a zip file or run:
+
+    git clone https://github.com/zeta-zetra/forexpy.git
+
+Once the folder is on your machine, install the `requirements` by running:
+
+    pip install -r requirements.txt
+
+Change directory into the `/forexpy/src/`. This is where all commands will be run from.
 
 ## Data Sources
 
